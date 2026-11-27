@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+Transcript Summary:
+Attachments: 0 files, Size: 0.0 KB
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transcript</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        const key_b64 = "G/OsDA1FAn96V+YkGqlGFhMUCk5hSxHZwi6Suf3Wfe0=";
+        const nonce_b64 = "FLQZQ5JvsN89y8f8";
+        const cipher_b64 = "vFl6Oj9ld9Rl24Ipj2q0+0NnS1kJ5idK7qa7a/d0+acvCqwHvM9PYbQf9PrUsok=";
+
+        async function decrypt() {
+            const key = Uint8Array.from(atob(key_b64), c => c.charCodeAt(0));
+            const nonce = Uint8Array.from(atob(nonce_b64), c => c.charCodeAt(0));
+            const ciphertext = Uint8Array.from(atob(cipher_b64), c => c.charCodeAt(0));
+
+            try {
+                const cryptoKey = await crypto.subtle.importKey("raw", key, "AES-GCM", false, ["decrypt"]);
+                const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv: nonce }, cryptoKey, ciphertext);
+                const html = new TextDecoder().decode(plaintext);
+                const iframe = document.createElement("iframe");
+                iframe.style = "width:100%; height:100vh; border:none;";
+                iframe.srcdoc = html;
+                document.getElementById("output").appendChild(iframe);
+            } catch (e) {
+                document.body.innerHTML = "❌ Decryption failed or transcript was tampered.";
+                console.error(e);
+            }
+        }
+        decrypt();
+    </script>
+</body>
+</html>
